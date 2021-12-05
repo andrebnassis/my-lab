@@ -1,3 +1,7 @@
+# Issue related
+
+[https://github.com/storybookjs/storybook/issues/13362](https://github.com/storybookjs/storybook/issues/13362)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
