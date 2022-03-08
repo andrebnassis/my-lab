@@ -1,3 +1,11 @@
+# Issue related
+
+https://github.com/mui/material-ui/issues/31365
+
+https://github.com/mui/material-ui/issues/31235
+
+`bundle.js:46376 Warning: Failed prop type: MUI: The loadingPosition="start" should be used in combination with startIcon.`
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

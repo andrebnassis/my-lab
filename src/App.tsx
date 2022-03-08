@@ -1,25 +1,69 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Box, CircularProgress } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import SaveIcon from '@mui/icons-material/Save';
 
-function App() {
+const App = () => {
+
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  
+  <LoadingButton
+      aria-label="save-task"
+      color="primary"
+      loading={isLoading}
+      disabled={false}
+      loadingIndicator={
+          <CircularProgress
+              color="inherit"
+              size={16}
+              sx={{ paddingLeft: '5px', paddingRight: '5px' }}
+          />
+      }
+      loadingPosition="start"
+      variant="contained"
+      size="small"
+      sx={{
+          minWidth: '35px',
+          height: '35px',
+          margin: '0px 2px 4px',
+          padding: '5px 5px 5px 5px',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-evenly',
+          '& .MuiLoadingButton-loadingIndicator': {
+              position: 'unset',
+              left: 'unset',
+          },
+          ':hover': {
+              color: '#ffffff',
+              backgroundColor: '#0475b4',
+          },
+          ':active': {
+              color: '#fff',
+              backgroundColor: '#085ca1',
+          },
+          ':disabled': {
+              color: '#737373',
+              backgroundColor: '#f4f5f7',
+          },
+      }}
+      onClick={() => setIsLoading(!isLoading)}
+  >
+      <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          sx={{
+              paddingLeft: '5px',
+              paddingRight: '5px',
+              fontSize: '16px',
+          }}
+      >
+          <SaveIcon />
+      </Box>
+  </LoadingButton>
+
   );
 }
 
