@@ -1,3 +1,17 @@
+# Experiment: Render a component in a new window (using React Portal)
+
+## Useful references:
+
+    - https://stackoverflow.com/a/64391469/6146980
+    - https://www.youtube.com/watch?v=LyLa7dU5tp8&ab_channel=WebDevSimplified
+    - https://blog.logrocket.com/best-practices-react-iframes/
+    - https://medium.com/hackernoon/using-a-react-16-portal-to-do-something-cool-2a2d627b0202
+    - https://blog.bitsrc.io/understanding-react-portals-ab79827732c7
+        
+## Useful tools:    
+    - Generate random images to render inside an iframe:
+        - https://picsum.photos/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
