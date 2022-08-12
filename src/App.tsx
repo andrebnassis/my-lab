@@ -9,19 +9,38 @@ const App:React.FC = () => {
   return (<>
   <button onClick={() => setIsOpen(true)}>OPEN IN NEW WINDOW</button>
   {isOpen && <RenderInWindow onClose={() => setIsOpen(false)}>
-  <MyComponentWithIframes data={urlsToCall}/>
-  </RenderInWindow>}
+  <ResizeIframe userId={1}/>
+  <ResizeIframe userId={2}/>
+  </RenderInWindow>
+  }
+  <ResizeIframe userId={1}/>
+  <ResizeIframe userId={2}/>
   </>)
 }
 
-const MyComponentWithIframes:React.FC<{data:Array<string>}> = ({data}) => {
-  return (
-    <div style={{display:'flex', flexDirection:'column'}}>
-     {data.map((url) => {
-      return <iframe src={url}></iframe>
-     })}
-    </div>
-   );
+const ResizeIframe:React.FC<{userId:number}> = ({userId}) =>{
+  const iframeRef = useRef<any>(null);
+
+  useEffect(() => {
+    if(!iframeRef || !iframeRef.current){
+      return;
+    }
+ 
+    window.addEventListener('message', (e) => {
+      const { event } = e.data;
+  
+      if (event === 'resize') {
+        console.log({event});
+        const { user, height } = e.data;
+        //const iframe = window.document.getElementById(`timesheet_${user}`);
+        if(iframeRef.current.id === `timesheet_${user}`)
+          iframeRef.current.height = height;
+      }
+    });
+
+  },[])
+
+  return (<iframe id={`timesheet_${userId}`} ref={iframeRef} src={'http://localhost:8400/'}></iframe>)
 }
 
 const RenderInWindow = (props:any) => {
@@ -40,7 +59,7 @@ const RenderInWindow = (props:any) => {
       newWindow.current = window.open(
         "",
         "",
-        "width=600,height=400,left=200,top=200"
+        "width=600,height=1500,left=200,top=200"
       );
       // Append container
       newWindow.current.document.body.appendChild(container);
@@ -48,10 +67,36 @@ const RenderInWindow = (props:any) => {
       // Save reference to window for cleanup
       const curWindow = newWindow.current;
       curWindow.addEventListener('beforeunload', props.onClose)
+      
+      curWindow.addEventListener('message', (e:any) => {
+        const { event } = e.data;
+    
+        if (event === 'resize') {
+          console.log({event});
+          const { user, height } = e.data;
+          const iframe = curWindow.document.getElementById(`timesheet_${user}`);
+          console.log(iframe);
+          console.log(user);
+          (iframe as any).height = height;
+        }
+      });
+
 
       // Return cleanup function
       return () => {
-        curWindow.removeEventListener('beforeunload', props.onClose)
+        curWindow.removeEventListener('beforeunload', props.onClose);
+        curWindow.removeEventListener('message', (e:any) => {
+          const { event } = e.data;
+      
+          if (event === 'resize') {
+            console.log({event});
+            const { user, height } = e.data;
+            const iframe = curWindow.document.getElementById(`timesheet_${user}`);
+            console.log(iframe);
+            console.log(user);
+            (iframe as any).height = height;
+          }
+        });
         curWindow.close()}
       
     }
