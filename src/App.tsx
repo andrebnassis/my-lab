@@ -4,43 +4,24 @@ import { createPortal } from 'react-dom';
 const App:React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const urlsToCall = ['https://picsum.photos/200/300','https://picsum.photos/200/300']
+  const userIdArr = [1,2]
 
   return (<>
-  <button onClick={() => setIsOpen(true)}>OPEN IN NEW WINDOW</button>
+  <button onClick={() => {
+    setIsOpen(true);}}>OPEN IN NEW WINDOW</button>
   {isOpen && <RenderInWindow onClose={() => setIsOpen(false)}>
-  <ResizeIframe userId={1}/>
-  <ResizeIframe userId={2}/>
+  {userIdArr.map((userId) => 
+  
+    <iframe 
+        id={`timesheet_${userId}`} 
+        src={'http://localhost:8400/'} 
+        frameBorder="0">
+    </iframe>)
+  
+  }
   </RenderInWindow>
   }
-  <ResizeIframe userId={1}/>
-  <ResizeIframe userId={2}/>
   </>)
-}
-
-const ResizeIframe:React.FC<{userId:number}> = ({userId}) =>{
-  const iframeRef = useRef<any>(null);
-
-  useEffect(() => {
-    if(!iframeRef || !iframeRef.current){
-      return;
-    }
- 
-    window.addEventListener('message', (e) => {
-      const { event } = e.data;
-  
-      if (event === 'resize') {
-        console.log({event});
-        const { user, height } = e.data;
-        //const iframe = window.document.getElementById(`timesheet_${user}`);
-        if(iframeRef.current.id === `timesheet_${user}`)
-          iframeRef.current.height = height;
-      }
-    });
-
-  },[])
-
-  return (<iframe id={`timesheet_${userId}`} ref={iframeRef} src={'http://localhost:8400/'}></iframe>)
 }
 
 const RenderInWindow = (props:any) => {
@@ -66,37 +47,24 @@ const RenderInWindow = (props:any) => {
       
       // Save reference to window for cleanup
       const curWindow = newWindow.current;
-      curWindow.addEventListener('beforeunload', props.onClose)
       
-      curWindow.addEventListener('message', (e:any) => {
+      const resizeIframeEventHandler = (e:any) => {
         const { event } = e.data;
     
         if (event === 'resize') {
-          console.log({event});
           const { user, height } = e.data;
           const iframe = curWindow.document.getElementById(`timesheet_${user}`);
-          console.log(iframe);
-          console.log(user);
-          (iframe as any).height = height;
+          iframe.setAttribute('height', height);
         }
-      });
+      }
 
+      curWindow.addEventListener('beforeunload', props.onClose)
+      
+      curWindow.addEventListener('message', resizeIframeEventHandler);
 
-      // Return cleanup function
       return () => {
         curWindow.removeEventListener('beforeunload', props.onClose);
-        curWindow.removeEventListener('message', (e:any) => {
-          const { event } = e.data;
-      
-          if (event === 'resize') {
-            console.log({event});
-            const { user, height } = e.data;
-            const iframe = curWindow.document.getElementById(`timesheet_${user}`);
-            console.log(iframe);
-            console.log(user);
-            (iframe as any).height = height;
-          }
-        });
+        curWindow.removeEventListener('message', resizeIframeEventHandler);
         curWindow.close()}
       
     }
