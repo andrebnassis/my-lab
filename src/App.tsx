@@ -1,76 +1,32 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import React, { useCallback, useEffect, useState } from 'react';
 
-const App:React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const userIdArr = [1,2]
-
-  return (<>
-  <button onClick={() => {
-    setIsOpen(true);}}>OPEN IN NEW WINDOW</button>
-  {isOpen && <RenderInWindow onClose={() => setIsOpen(false)}>
-  {userIdArr.map((userId) => 
-  
-    <iframe 
-        id={`timesheet_${userId}`} 
-        src={'http://localhost:8400/'} 
-        frameBorder="0">
-    </iframe>)
-  
-  }
-  </RenderInWindow>
-  }
-  </>)
+function delay(delay: number) {
+  return new Promise( res => setTimeout(res, delay) );
 }
 
-const RenderInWindow = (props:any) => {
-  const [container, setContainer] = useState<any>(null);
-  const newWindow = useRef<any>(null);
+const App:React.FC = () => {
+ 
 
-  useEffect(() => {
-    // Create container element on client-side
-    setContainer(document.createElement("div"));
-  }, []);
-
-  useEffect(() => {
-    // When container is ready
-    if (container) {
-      // Create window
-      newWindow.current = window.open(
-        "",
-        "",
-        "width=600,height=1500,left=200,top=200"
-      );
-      // Append container
-      newWindow.current.document.body.appendChild(container);
-      
-      // Save reference to window for cleanup
-      const curWindow = newWindow.current;
-      
-      const resizeIframeEventHandler = (e:any) => {
-        const { event } = e.data;
+  const [promises, setPromises] = useState<Array<Promise<any>>>([1,2,3,4,5].map(num => new Promise(async resolve => resolve(num))));
     
-        if (event === 'resize') {
-          const { user, height } = e.data;
-          const iframe = curWindow.document.getElementById(`timesheet_${user}`);
-          iframe.setAttribute('height', height);
-        }
-      }
+  const handlePromises = useCallback(async () => {
+    if(promises.length)
+    {
+      await delay(1000);
+      const targetPromise = promises.slice(0,1);
+      const result = await targetPromise[0];
+      console.log({result});
+      const rest = promises.slice(1);
+      setPromises(rest);
+  }
+  }, [promises])
 
-      curWindow.addEventListener('beforeunload', props.onClose)
-      
-      curWindow.addEventListener('message', resizeIframeEventHandler);
+  useEffect(() => {handlePromises()}, [handlePromises])
 
-      return () => {
-        curWindow.removeEventListener('beforeunload', props.onClose);
-        curWindow.removeEventListener('message', resizeIframeEventHandler);
-        curWindow.close()}
-      
-    }
-  }, [container]);
-
-  return container && createPortal(props.children, container);
-};
+  return (
+  <>
+    See console.log
+  </>)
+}
 
 export default App;
