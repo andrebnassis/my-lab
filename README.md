@@ -1,3 +1,8 @@
+# Issue Related
+
+[https://github.com/andrebnassis/codemirror-readonly-ranges/issues/6](https://github.com/andrebnassis/codemirror-readonly-ranges/issues/6)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

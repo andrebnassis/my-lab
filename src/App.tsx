@@ -1,26 +1,40 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { EditorView, basicSetup } from "@codemirror/basic-setup";
+import CodeEditor from "./CodeEditor"
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const pasteOnlyOnSpecificPosition = () => EditorView.domEventHandlers({
+        
+  paste(event:any, view:any)
+  {
+
+    const clipboardData = event.clipboardData || (window as any).clipboardData;
+    const pastedData = clipboardData.getData('Text');
+   
+    console.log(view.state);
+    view.dispatch(
+      {
+        changes:{
+            from: 51, 
+            to: 51, 
+            insert: pastedData 
+          },
+      })
+
+      return true;
+  }
+  
+})
+
+const App = () => {
+
+  const initialCode = 
+  `read-only line 1
+read-only line 2
+read-only line 3
+<Here you can modify>
+read-only line 4` 
+
+return (<CodeEditor onView={console.log} initialDocValue={initialCode} extensions={[basicSetup, pasteOnlyOnSpecificPosition() ]} />);
 }
 
 export default App;
